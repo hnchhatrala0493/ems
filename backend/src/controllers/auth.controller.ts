@@ -1,0 +1,16 @@
+import type { NextFunction,Request,Response } from 'express'; import { User } from '../models/User.js'; import { AuthService,type RequestMeta } from '../modules/auth/auth.service.js'; import { AppError } from '../utils/AppError.js'; import { ok } from '../utils/response.js';
+const service=new AuthService(); const meta=(req:Request):RequestMeta=>({ipAddress:req.ip||req.socket.remoteAddress||'unknown',userAgent:req.get('user-agent')||'unknown',deviceName:req.get('x-device-name')||'Web browser',deviceId:req.body?.deviceId}); const run=(fn:(req:Request)=>Promise<unknown>,message='Success')=>async(req:Request,res:Response,next:NextFunction)=>{try{ok(res,await fn(req),message)}catch(e){next(e)}};
+export const login=run(req=>service.login(req.body.email,req.body.password,req.body.rememberMe,req.body.mfaCode,meta(req)),'Signed in');
+export const refresh=run(req=>service.refresh(req.body.refreshToken,meta(req)),'Token refreshed');
+export const logout=run(async req=>{await service.logout(req.user!.id,req.body.refreshToken);return null},'Signed out');
+export const logoutAll=run(async req=>{await service.logoutAll(req.user!.id);return null},'Signed out from all devices');
+export const updateProfile=run(async req=>{const name=String(req.body.name||'').trim();if(name.length<2)throw new AppError(422,'Name must contain at least 2 characters','INVALID_PROFILE');const user=await User.findByIdAndUpdate(req.user!.id,{$set:{name,avatarUrl:req.body.avatarUrl||undefined}},{new:true,runValidators:true}).lean();if(!user)throw new AppError(404,'User not found','NOT_FOUND');return user},'Profile updated');
+export const forgotPassword=run(async req=>{await service.issuePurposeToken(req.body.email,'PASSWORD_RESET');return null},'If the account exists, a reset email has been sent');
+export const verifyOtp=run(req=>service.verifyResetCode(req.body.email,req.body.code),'Code verified');
+export const resetPassword=run(async req=>{await service.resetPassword(req.body.token,req.body.password);return null},'Password reset');
+export const requestVerification=run(async req=>{const user=await User.findById(req.user!.id);if(user)await service.issuePurposeToken(user.email,'EMAIL_VERIFICATION');return null},'Verification email sent');
+export const verifyEmail=run(async req=>{await service.verifyEmail(req.body.token);return null},'Email verified');
+export const changePassword=run(async req=>{await service.changePassword(req.user!.id,req.body.currentPassword,req.body.newPassword);return null},'Password changed. Sign in again.');
+export const setupMfa=run(req=>service.setupMfa(req.user!.id),'MFA setup created'); export const enableMfa=run(async req=>{await service.enableMfa(req.user!.id,req.body.code);return null},'MFA enabled'); export const disableMfa=run(async req=>{await service.disableMfa(req.user!.id,req.body.code);return null},'MFA disabled');
+export const sessions=run(req=>service.sessions(req.user!.id)); export const loginActivity=run(req=>service.activityList(req.user!.id)); export const revokeSession=run(async req=>{await service.revokeSession(req.user!.id,String(req.params.id));return null},'Session revoked');
+export async function me(req:Request,res:Response,next:NextFunction){try{const user=await User.findById(req.user?.id).lean();if(!user)throw new AppError(404,'User not found');ok(res,user)}catch(e){next(e)}}

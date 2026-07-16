@@ -1,0 +1,17 @@
+import {Router} from 'express';
+import {authenticate} from '../middleware/authenticate.js';
+import {requirePermission} from '../middleware/authorize.js';
+import {documentUpload} from '../middleware/upload.js';
+import * as c from '../controllers/leave.controller.js';
+import {PERMISSIONS} from '../constants/permissions.js';
+export const leaveRoutes=Router();
+leaveRoutes.use(authenticate);
+leaveRoutes.get('/types',requirePermission(PERMISSIONS['leave.view']),c.types);
+leaveRoutes.get('/balances',requirePermission(PERMISSIONS['leave.view']),c.balances);
+leaveRoutes.get('/requests',requirePermission(PERMISSIONS['leave.view']),c.requests);
+leaveRoutes.post('/requests',requirePermission(PERMISSIONS['leave.apply']),documentUpload,c.prepareMobileApply,c.apply);
+leaveRoutes.post('/requests/:id/actions',requirePermission(PERMISSIONS['leave.approve']),c.action);
+const hr=requirePermission(PERMISSIONS['leave.manage']);
+leaveRoutes.post('/types',hr,c.createType);
+leaveRoutes.patch('/types/:id',hr,c.updateType);
+leaveRoutes.post('/balances/allocate',hr,c.allocate);

@@ -1,0 +1,10 @@
+import { z } from 'zod';
+const password=z.string().min(8).max(128);
+export const loginSchema=z.object({body:z.object({email:z.string().email(),password,rememberMe:z.boolean().default(false),mfaCode:z.union([z.string().length(6),z.literal('')]).optional().transform(value=>value||undefined),deviceId:z.string().min(8).max(100).optional()}),query:z.any(),params:z.any()});
+export const emailSchema=z.object({body:z.object({email:z.string().email()}),query:z.any(),params:z.any()});
+export const tokenSchema=z.object({body:z.object({token:z.string().min(20)}),query:z.any(),params:z.any()});
+export const otpSchema=z.object({body:z.object({email:z.string().email(),code:z.string().regex(/^\d{6}$/)}),query:z.any(),params:z.any()});
+export const resetPasswordSchema=z.object({body:z.object({token:z.string().min(6),password}),query:z.any(),params:z.any()});
+export const changePasswordSchema=z.object({body:z.object({currentPassword:password,newPassword:password}),query:z.any(),params:z.any()});
+export const refreshSchema=z.object({body:z.object({refreshToken:z.string().min(20)}),query:z.any(),params:z.any()});
+export const mfaCodeSchema=z.object({body:z.object({code:z.string().regex(/^\d{6}$/)}),query:z.any(),params:z.any()});

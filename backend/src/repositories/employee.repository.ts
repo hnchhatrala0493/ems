@@ -1,0 +1,2 @@
+import { Employee, type IEmployee } from '../models/Employee.js';
+export class EmployeeRepository { list(filter:Record<string,unknown>,skip:number,limit:number){return Employee.find(filter).sort({createdAt:-1}).skip(skip).limit(limit).lean()} count(filter:Record<string,unknown>){return Employee.countDocuments(filter)} create(data:IEmployee){return Employee.create(data)} findById(id:string){return Employee.findById(id)} }

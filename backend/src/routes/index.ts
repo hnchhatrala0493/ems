@@ -1,0 +1,24 @@
+import {Router} from 'express'; import {authRoutes} from '../modules/auth/auth.routes.js'; import {employeeRoutes} from '../modules/employee/employee.routes.js'; import {accessControlRoutes} from '../modules/access-control/access-control.routes.js'; import {masterRoutes} from './master.routes.js'; import {attendanceRoutes} from './attendance.routes.js'; import {shiftRoutes} from './shift.routes.js'; import {leaveRoutes} from './leave.routes.js'; import {holidayRoutes} from './holiday.routes.js'; import {payrollRoutes} from './payroll.routes.js'; import {performanceRoutes} from './performance.routes.js'; import {recruitmentRoutes} from './recruitment.routes.js'; import {onboardingRoutes} from './onboarding.routes.js'; import {offboardingRoutes} from './offboarding.routes.js'; import {documentRoutes} from './document.routes.js'; import {auditRoutes} from './audit.routes.js'; import {assetRoutes} from './asset.routes.js'; import {roleRoutes} from './role.routes.js'; import {notificationRoutes} from './notification.routes.js'; import {reportRoutes} from './report.routes.js'; import {emailTemplateRoutes} from './emailTemplate.routes.js';
+import {employeeIdConfigRoutes} from './employeeIdConfig.routes.js';
+import {announcementRoutes} from './announcement.routes.js';
+import {helpdeskRoutes} from './helpdesk.routes.js';
+import {taskRoutes} from './task.routes.js';
+import {expenseRoutes} from './expense.routes.js';
+import {approvalRoutes} from './approval.routes.js';
+import {settingsRoutes} from './settings.routes.js';
+import {mobileCompatRoutes} from './mobile-compat.routes.js';
+const router=Router();
+// Public authentication endpoints must be matched before catch-all protected
+// routers. mobileCompatRoutes authenticates every request it receives.
+router.use('/auth',authRoutes);
+router.use(mobileCompatRoutes);
+router.use('/announcements',announcementRoutes);
+router.use('/helpdesk',helpdeskRoutes);
+router.use('/tasks',taskRoutes);
+router.use('/expenses',expenseRoutes);
+router.use('/approvals',approvalRoutes);
+router.use('/settings',settingsRoutes);
+router.use(accessControlRoutes);
+router.use('/employee-id-configs',employeeIdConfigRoutes);
+router.use('/email-templates',emailTemplateRoutes); router.use('/reports',reportRoutes); router.use('/notifications',notificationRoutes); router.use('/employees',employeeRoutes); router.use('/masters',masterRoutes); router.use('/attendance',attendanceRoutes); router.use('/shifts',shiftRoutes); router.use('/leaves',leaveRoutes); router.use('/holidays',holidayRoutes); router.use('/payroll',payrollRoutes); router.use('/performance',performanceRoutes); router.use('/recruitment',recruitmentRoutes); router.use('/onboarding',onboardingRoutes); router.use('/offboarding',offboardingRoutes); router.use('/documents',documentRoutes); router.use('/assets',assetRoutes); router.use('/audit',auditRoutes); router.use('/roles',roleRoutes);
+export default router;

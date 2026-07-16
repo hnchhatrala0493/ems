@@ -1,0 +1,1 @@
+import{Router}from'express';import{authenticate,authorize}from'../middleware/auth.js';import*as c from'../controllers/settings.controller.js';export const settingsRoutes=Router();settingsRoutes.use(authenticate,authorize('SUPER_ADMIN','ORGANIZATION_ADMIN','HR_ADMIN','PAYROLL_MANAGER'));settingsRoutes.get('/:section',c.get);settingsRoutes.patch('/:section',c.update);

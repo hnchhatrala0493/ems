@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+body { @apply m-0 bg-white font-sans text-slate-600 antialiased; }
+* { box-sizing: border-box; }
+@layer components {
+  .container-pad { @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10; }
+  .section-pad { @apply py-20 lg:py-28; }
+  .eyebrow { @apply mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-indigo-600; }
+  .heading { @apply font-display text-3xl font-extrabold leading-tight tracking-tight text-ink sm:text-4xl lg:text-5xl; }
+  .subheading { @apply mt-5 max-w-2xl text-base leading-7 text-slate-500 sm:text-lg; }
+  .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-3.5 font-bold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 hover:bg-indigo-700; }
+  .btn-secondary { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3.5 font-bold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200; }
+  .card { @apply rounded-2xl border border-slate-100 bg-white shadow-soft; }
+}
+.grid-dots { background-image: radial-gradient(#c7d2fe 1px, transparent 1px); background-size: 22px 22px; }

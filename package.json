@@ -1,0 +1,22 @@
+{
+  "name": "employeehub",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace frontend",
+    "dev:api": "npm run dev --workspace backend",
+    "build": "npm run build --workspace frontend",
+    "build:all": "npm run build --workspaces --if-present",
+    "preview": "npm run preview --workspace frontend"
+  },
+  "engines": {
+    "node": ">=20 <23"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

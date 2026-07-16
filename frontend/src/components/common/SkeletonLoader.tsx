@@ -1,0 +1,1 @@
+export function SkeletonLoader({lines=3}:{lines?:number}){return <div aria-label="Loading" role="status" className="premium-panel animate-pulse space-y-3 p-5">{Array.from({length:lines}).map((_,index)=><div key={index} className="h-3 rounded-full bg-slate-500/15" style={{width:index===lines-1?'62%':'100%'}}/>)}</div>}

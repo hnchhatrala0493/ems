@@ -1,0 +1,1 @@
+import{Schema,model}from'mongoose';const schema=new Schema({organizationId:{type:String,index:true},section:{type:String,required:true},values:{type:Schema.Types.Mixed,default:{}}},{timestamps:true});schema.index({organizationId:1,section:1},{unique:true});export const OrganizationSetting=model('OrganizationSetting',schema);

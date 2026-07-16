@@ -1,0 +1,14 @@
+node_modules
+dist
+.next
+.env
+.env.local
+.env.production
+.vercel
+coverage
+*.log
+*.tsbuildinfo
+.DS_Store
+.vite
+uploads
+dist-*

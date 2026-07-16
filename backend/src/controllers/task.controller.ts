@@ -1,0 +1,51 @@
+import type { NextFunction, Request, Response } from 'express';
+import type { Express } from 'express';
+import { Task } from '../models/Task.js';
+import { User } from '../models/User.js';
+import { AppError } from '../utils/AppError.js';
+import { ok } from '../utils/response.js';
+
+const managerRoles=new Set(['SUPER_ADMIN','ORGANIZATION_ADMIN','HR_ADMIN','HR_EXECUTIVE','DEPARTMENT_MANAGER','TEAM_LEADER']);
+const scope=(req:Request)=>req.user?.organizationId?{organizationId:req.user.organizationId}:{};
+const isManager=(req:Request)=>Boolean(req.user&&managerRoles.has(req.user.role));
+const access=(req:Request)=>({...scope(req),...(!isManager(req)?{assignedEmployee:req.user!.id}:{})});
+const statusOut=(value:string)=>value==='TO_DO'?'TODO':value;
+const priorityOut=(value:string)=>value==='CRITICAL'?'URGENT':value;
+const files=(req:Request)=>(req.files as Express.Multer.File[]|undefined)??[];
+const fileRecord=(file:Express.Multer.File)=>({name:file.originalname,url:`/uploads/documents/${file.filename}`,mimeType:file.mimetype,size:file.size,uploadedAt:new Date()});
+const actor=(id:string,users:Map<string,any>)=>{const user=users.get(id);return{id,name:user?.name??'Employee',avatarUrl:undefined}};
+
+async function present(raw:any){
+ const ids=[raw.assignedEmployee,raw.assignedBy,...(raw.comments??[]).map((x:any)=>x.userId),...(raw.activity??[]).map((x:any)=>x.actorId)].filter(Boolean);
+ const users=new Map((await User.find({_id:{$in:ids}}).select('name').lean()).map((user:any)=>[String(user._id),user]));
+ return {id:String(raw._id),title:raw.title,description:raw.description,assigneeId:raw.assignedEmployee,assignee:actor(raw.assignedEmployee,users),reporterId:raw.assignedBy,reporter:actor(raw.assignedBy,users),project:raw.project,priority:priorityOut(raw.priority),status:statusOut(raw.status),startDate:raw.startDate,dueDate:raw.dueDate,progress:raw.progress??0,attachments:(raw.attachments??[]).map((x:any)=>({id:String(x._id),name:x.name,url:x.url,mimeType:x.mimeType,size:x.size,uploadedAt:x.uploadedAt})),subtasks:(raw.subtasks??[]).map((x:any)=>({id:String(x._id),title:x.title,completed:x.completed,assigneeId:x.assigneeId})),comments:(raw.comments??[]).map((x:any)=>({id:String(x._id),message:x.message??x.text,author:actor(x.userId,users),createdAt:x.createdAt})),createdAt:raw.createdAt,updatedAt:raw.updatedAt};
+}
+async function findTask(req:Request){const task=await Task.findOne({_id:req.params.id,...access(req)});if(!task)throw new AppError(404,'Task not found','NOT_FOUND');return task}
+async function paged(req:Request,res:Response,team:boolean){
+ const page=Math.max(1,Number(req.query.page)||1),limit=Math.min(100,Math.max(1,Number(req.query.limit)||20));
+ const filter:any={...scope(req),...(!team?{assignedEmployee:req.user!.id}:!isManager(req)?{assignedEmployee:req.user!.id}:{})};
+ if(req.query.status)filter.status=req.query.status==='TODO'?{$in:['TODO','TO_DO']}:req.query.status;
+ if(req.query.priority)filter.priority=req.query.priority==='URGENT'?{$in:['URGENT','CRITICAL']}:req.query.priority;
+ if(req.query.assigneeId)filter.assignedEmployee=String(req.query.assigneeId);
+ if(req.query.project)filter.project=String(req.query.project);
+ if(req.query.search)filter.$or=['title','description','project'].map(field=>({[field]:{$regex:String(req.query.search),$options:'i'}}));
+ const [rows,total]=await Promise.all([Task.find(filter).sort({createdAt:-1}).skip((page-1)*limit).limit(limit).lean(),Task.countDocuments(filter)]);
+ const totalPages=Math.max(1,Math.ceil(total/limit));
+ ok(res,{items:await Promise.all(rows.map(present)),pagination:{page,limit,total,totalPages,hasNextPage:page<totalPages,hasPreviousPage:page>1}},'Tasks fetched');
+}
+
+export async function myTasks(req:Request,res:Response,next:NextFunction){try{await paged(req,res,false)}catch(e){next(e)}}
+export async function teamTasks(req:Request,res:Response,next:NextFunction){try{if(!isManager(req))throw new AppError(403,'Task assignment permission required','FORBIDDEN');await paged(req,res,true)}catch(e){next(e)}}
+export async function list(req:Request,res:Response,next:NextFunction){try{await paged(req,res,isManager(req))}catch(e){next(e)}}
+export async function get(req:Request,res:Response,next:NextFunction){try{ok(res,await present((await findTask(req)).toObject()),'Task fetched')}catch(e){next(e)}}
+export async function allowedAssignees(req:Request,res:Response,next:NextFunction){try{if(!isManager(req))return ok(res,[],'No assignable employees');const users=await User.find({...scope(req),active:true}).select('name role').sort({name:1}).lean();ok(res,users.map((user:any)=>({id:String(user._id),name:user.name,employeeId:undefined})),'Allowed assignees fetched')}catch(e){next(e)}}
+export async function create(req:Request,res:Response,next:NextFunction){try{const body=typeof req.body.payload==='string'?JSON.parse(req.body.payload):req.body;const assignee=isManager(req)&&body.assigneeId?body.assigneeId:req.user!.id;const task=await Task.create({...scope(req),title:body.title,description:body.description,assignedEmployee:assignee,assignedBy:req.user!.id,project:body.project,priority:body.priority,status:body.status||'TODO',startDate:body.startDate,dueDate:body.dueDate,progress:body.progress??0,subtasks:(body.subtasks??[]).map((x:any)=>({title:x.title,completed:false})),attachments:files(req).map(fileRecord),activity:[{action:'CREATED',description:'Task created',actorId:req.user!.id}]});ok(res,await present(task.toObject()),'Task created',201)}catch(e){next(e)}}
+export async function update(req:Request,res:Response,next:NextFunction){try{const task=await findTask(req);const allowed=isManager(req)?req.body:{status:req.body.status,progress:req.body.progress};const mapped={...allowed,...(allowed.assigneeId?{assignedEmployee:allowed.assigneeId}:{}),updatedBy:req.user!.id};delete mapped.assigneeId;Object.assign(task,mapped);task.activity.push({action:'UPDATED',description:'Task updated',actorId:req.user!.id,createdAt:new Date()} as any);await task.save();ok(res,await present(task.toObject()),'Task updated')}catch(e){next(e)}}
+export async function status(req:Request,res:Response,next:NextFunction){try{const task=await findTask(req);task.status=req.body.status;task.progress=req.body.status==='COMPLETED'?100:(req.body.progress??task.progress);task.updatedBy=req.user!.id;task.activity.push({action:'STATUS_CHANGED',description:`Status changed to ${req.body.status}`,actorId:req.user!.id,createdAt:new Date()} as any);await task.save();ok(res,await present(task.toObject()),'Task status updated')}catch(e){next(e)}}
+export async function assign(req:Request,res:Response,next:NextFunction){try{const candidate=await User.findOne({_id:req.body.assigneeId,...scope(req),active:true});if(!candidate)throw new AppError(400,'Assignee is not an allowed team member','INVALID_ASSIGNEE');const task=await findTask(req);task.assignedEmployee=String(candidate._id);task.activity.push({action:'ASSIGNED',description:`Task assigned to ${candidate.name}`,actorId:req.user!.id,createdAt:new Date()} as any);await task.save();ok(res,await present(task.toObject()),'Task assigned')}catch(e){next(e)}}
+export async function comment(req:Request,res:Response,next:NextFunction){try{const task=await findTask(req);const entry:any={message:req.body.message??req.body.text,userId:req.user!.id,createdAt:new Date()};if(!entry.message?.trim())throw new AppError(400,'Comment is required','VALIDATION_ERROR');task.comments.push(entry);task.activity.push({action:'COMMENTED',description:'Comment added',actorId:req.user!.id,createdAt:new Date()} as any);await task.save();const saved:any=task.comments.at(-1);ok(res,{id:String(saved._id),message:saved.message,author:{id:req.user!.id,name:'You'},createdAt:saved.createdAt},'Comment added',201)}catch(e){next(e)}}
+export async function attachment(req:Request,res:Response,next:NextFunction){try{const task=await findTask(req),file=req.file;if(!file)throw new AppError(400,'Attachment is required','VALIDATION_ERROR');task.attachments.push(fileRecord(file) as any);task.activity.push({action:'ATTACHMENT_ADDED',description:`Attachment ${file.originalname} uploaded`,actorId:req.user!.id,createdAt:new Date()} as any);await task.save();ok(res,await present(task.toObject()),'Attachment uploaded')}catch(e){next(e)}}
+export async function addSubtask(req:Request,res:Response,next:NextFunction){try{const task=await findTask(req);if(!req.body.title?.trim())throw new AppError(400,'Subtask title is required','VALIDATION_ERROR');task.subtasks.push({title:req.body.title.trim(),completed:false} as any);task.activity.push({action:'SUBTASK_ADDED',description:`Subtask ${req.body.title.trim()} added`,actorId:req.user!.id,createdAt:new Date()} as any);await task.save();const saved:any=task.subtasks.at(-1);ok(res,{id:String(saved._id),title:saved.title,completed:saved.completed},'Subtask added',201)}catch(e){next(e)}}
+export async function toggleSubtask(req:Request,res:Response,next:NextFunction){try{const task=await findTask(req),subtask:any=task.subtasks.id(String(req.params.subtaskId));if(!subtask)throw new AppError(404,'Subtask not found','NOT_FOUND');subtask.completed=Boolean(req.body.completed);task.activity.push({action:'SUBTASK_UPDATED',description:`Subtask marked ${subtask.completed?'complete':'open'}`,actorId:req.user!.id,createdAt:new Date()} as any);await task.save();ok(res,{id:String(subtask._id),title:subtask.title,completed:subtask.completed},'Subtask updated')}catch(e){next(e)}}
+export async function activity(req:Request,res:Response,next:NextFunction){try{const task:any=await findTask(req);const ids=task.activity.map((x:any)=>x.actorId);const users=new Map((await User.find({_id:{$in:ids}}).select('name').lean()).map((user:any)=>[String(user._id),user]));ok(res,task.activity.slice().reverse().map((x:any)=>({id:String(x._id),action:x.action,description:x.description,actor:actor(x.actorId,users),createdAt:x.createdAt})),'Task activity fetched')}catch(e){next(e)}}
+export async function remove(req:Request,res:Response,next:NextFunction){try{const result=await Task.deleteOne({_id:req.params.id,...scope(req)});if(!result.deletedCount)throw new AppError(404,'Task not found','NOT_FOUND');ok(res,null,'Task deleted')}catch(e){next(e)}}

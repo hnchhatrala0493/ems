@@ -1,0 +1,3 @@
+import{Schema,model}from'mongoose';
+const schema=new Schema({organizationId:{type:String,index:true},title:{type:String,required:true,trim:true,maxlength:150},content:{type:String,required:true,maxlength:5000},category:{type:String,enum:['GENERAL','HR','EVENT','POLICY','URGENT'],default:'GENERAL'},audience:{type:String,enum:['ALL','MANAGERS','EMPLOYEES'],default:'ALL'},status:{type:String,enum:['DRAFT','PUBLISHED'],default:'DRAFT',index:true},publishedAt:Date,createdBy:{type:String,required:true},updatedBy:String},{timestamps:true});
+schema.index({organizationId:1,status:1,publishedAt:-1});export const Announcement=model('Announcement',schema);

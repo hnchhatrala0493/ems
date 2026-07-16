@@ -1,0 +1,1 @@
+import{Router}from'express';import{authenticate,authorize}from'../middleware/auth.js';import{list,update}from'../controllers/emailTemplate.controller.js';export const emailTemplateRoutes=Router();emailTemplateRoutes.use(authenticate,authorize('SUPER_ADMIN','ORGANIZATION_ADMIN','HR_ADMIN'));emailTemplateRoutes.get('/',list);emailTemplateRoutes.patch('/:id',update);

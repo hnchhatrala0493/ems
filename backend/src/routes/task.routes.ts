@@ -1,0 +1,22 @@
+import { Router } from 'express';
+import { authenticate, authorize } from '../middleware/auth.js';
+import { taskAttachmentUpload, taskAttachmentsUpload } from '../middleware/upload.js';
+import * as c from '../controllers/task.controller.js';
+
+export const taskRoutes=Router();
+taskRoutes.use(authenticate);
+taskRoutes.get('/my',c.myTasks);
+taskRoutes.get('/team',c.teamTasks);
+taskRoutes.get('/allowed-assignees',c.allowedAssignees);
+taskRoutes.get('/',c.list);
+taskRoutes.post('/',taskAttachmentsUpload,c.create);
+taskRoutes.get('/:id/activity',c.activity);
+taskRoutes.post('/:id/comments',c.comment);
+taskRoutes.post('/:id/attachments',taskAttachmentUpload,c.attachment);
+taskRoutes.post('/:id/subtasks',c.addSubtask);
+taskRoutes.patch('/:id/subtasks/:subtaskId',c.toggleSubtask);
+taskRoutes.patch('/:id/status',c.status);
+taskRoutes.patch('/:id/assign',authorize('SUPER_ADMIN','ORGANIZATION_ADMIN','HR_ADMIN','HR_EXECUTIVE','DEPARTMENT_MANAGER','TEAM_LEADER'),c.assign);
+taskRoutes.get('/:id',c.get);
+taskRoutes.patch('/:id',c.update);
+taskRoutes.delete('/:id',authorize('SUPER_ADMIN','ORGANIZATION_ADMIN','HR_ADMIN','HR_EXECUTIVE','DEPARTMENT_MANAGER','TEAM_LEADER'),c.remove);
