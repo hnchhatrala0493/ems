@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # EmployeeHub
 
 A scalable Employee Management System monorepo with a React/Vite frontend and an Express/MongoDB API.
@@ -27,3 +28,6 @@ Open `http://localhost:5173`. The local seed credentials are `admin@employeehub.
 The API separates configuration, modules, models, repositories, services, controllers, validation, middleware, routes, jobs and utilities under `backend/src`. The frontend lives in `frontend/src`, with feature folders, centralized routes, typed Redux hooks and RTK Query API access.
 
 Production integrations (Cloudinary/S3, SMTP/SendGrid, Redis queues and scheduled payroll/attendance jobs) intentionally require provider credentials and should be added behind service interfaces.
+=======
+# employee_management_system
+>>>>>>> 56a2d08263b1f6284922fcefb6a76c9f35fb412a
