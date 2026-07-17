@@ -1,0 +1,5 @@
+# Public API base URL. It must include /api/v1 and must not point to localhost in production.
+VITE_API_BASE_URL=https://api-ems-workforcepro.vercel.app/api/v1
+VITE_EMS_APP_URL=https://ems-workforcepro.vercel.app
+VITE_EMS_LOGIN_URL=https://ems-workforcepro.vercel.app/login
+VITE_LANDING_PAGE_URL=https://workforceprohub.vercel.app

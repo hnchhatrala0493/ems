@@ -43,6 +43,9 @@ import { Helpdesk } from '../pages/Helpdesk';
 import { Tasks } from '../pages/Tasks';
 import { Expenses } from '../pages/Expenses';
 import { ProtectedRoute } from './ProtectedRoute';
+import { PermissionRoute } from './PermissionRoute';
+import { DemoRequests } from '../pages/DemoRequests';
+import { DemoRequestDetails } from '../pages/DemoRequestDetails';
 
 function PublicPage({ children }: { children: ReactNode }) {
   return <div className="relative">
@@ -97,6 +100,8 @@ export function AppRoutes() {
         <Route path="audit-logs" element={<AuditLogs/>}/>
         <Route path="settings/security" element={<Security/>}/>
         <Route path="settings/employee-id" element={<EmployeeIdSettings/>}/>
+        <Route path="super-admin/demo-requests" element={<PermissionRoute allowed={['SUPER_ADMIN']}><DemoRequests/></PermissionRoute>}/>
+        <Route path="super-admin/demo-requests/:id" element={<PermissionRoute allowed={['SUPER_ADMIN']}><DemoRequestDetails/></PermissionRoute>}/>
       </Route>
     </Route>
     <Route path="*" element={<Navigate to={token ? '/' : '/login'} replace/>}/>

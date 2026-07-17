@@ -1,0 +1,2 @@
+const required=(value:string|undefined,name:string)=>{if(!value&&import.meta.env.PROD)throw new Error(`Missing environment variable: ${name}`);return(value||'').replace(/\/+$/,'')};
+export const appConfig={apiBaseUrl:required(import.meta.env.VITE_API_BASE_URL,'VITE_API_BASE_URL')||'/api/v1',landingPageUrl:required(import.meta.env.VITE_LANDING_PAGE_URL,'VITE_LANDING_PAGE_URL')||'http://localhost:5174',appUrl:required(import.meta.env.VITE_APP_URL,'VITE_APP_URL')||window.location.origin};

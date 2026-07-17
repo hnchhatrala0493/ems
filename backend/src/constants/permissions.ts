@@ -72,6 +72,14 @@ export const PERMISSIONS = {
   'task.manage': 'task.manage'
   ,'approval.view':'approval.view'
   ,'approval.action':'approval.action'
+  ,'demo-request.view':'demo-request.view'
+  ,'demo-request.update':'demo-request.update'
+  ,'demo-request.assign':'demo-request.assign'
+  ,'demo-request.schedule':'demo-request.schedule'
+  ,'demo-request.contact':'demo-request.contact'
+  ,'demo-request.email.retry':'demo-request.email.retry'
+  ,'demo-request.export':'demo-request.export'
+  ,'demo-request.archive':'demo-request.archive'
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

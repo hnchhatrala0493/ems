@@ -1,0 +1,10 @@
+# Public URL of the separately deployed API. Include the /api/v1 prefix.
+VITE_API_BASE_URL=https://api-ems-workforcepro.vercel.app/api/v1
+VITE_LANDING_PAGE_URL=https://workforceprohub.vercel.app
+VITE_APP_URL=https://ems-workforcepro.vercel.app
+
+# Public origin of the persistent Socket.IO backend (no /api/v1 suffix).
+VITE_SOCKET_URL=https://api-ems-workforcepro.vercel.app
+
+# Canonical public frontend URL, used for SEO metadata.
+VITE_SITE_URL=https://ems-workforcepro.vercel.app

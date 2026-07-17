@@ -7,10 +7,16 @@ import {expenseRoutes} from './expense.routes.js';
 import {approvalRoutes} from './approval.routes.js';
 import {settingsRoutes} from './settings.routes.js';
 import {mobileCompatRoutes} from './mobile-compat.routes.js';
+import {demoRequestRoutes} from './demoRequest.routes.js';
+import {adminDemoRequestRoutes} from './adminDemoRequest.routes.js';
+import {locationRoutes} from './location.routes.js';
 const router=Router();
 // Public authentication endpoints must be matched before catch-all protected
 // routers. mobileCompatRoutes authenticates every request it receives.
 router.use('/auth',authRoutes);
+router.use('/demo-requests',demoRequestRoutes);
+router.use('/admin/demo-requests',adminDemoRequestRoutes);
+router.use('/locations',locationRoutes);
 router.use(mobileCompatRoutes);
 router.use('/announcements',announcementRoutes);
 router.use('/helpdesk',helpdeskRoutes);

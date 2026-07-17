@@ -1,4 +1,5 @@
-const base=import.meta.env.VITE_API_URL||'/api/v1';const token=()=>localStorage.getItem('token')||sessionStorage.getItem('token')||'';
+﻿const base=import.meta.env.VITE_API_BASE_URL||'/api/v1';const token=()=>localStorage.getItem('token')||sessionStorage.getItem('token')||'';
 async function request<T>(path:string,init:RequestInit={}){const response=await fetch(`${base}${path}`,{...init,headers:{authorization:`Bearer ${token()}`,'content-type':'application/json',...init.headers}}),payload=await response.json();if(!response.ok)throw new Error(payload.message||'Request failed');return payload.data as T}
 export type EmployeeHistoryEvent={employeeId:string;employeeName:string;type:string;from?:string;to?:string;note?:string;effectiveDate:string};
 export const employeeApi={history:()=>request<EmployeeHistoryEvent[]>('/employees/history'),import:(employees:Record<string,unknown>[])=>request<{createdCount:number;failedCount:number;errors:{row:number;email?:string;message:string}[]}>('/employees/import',{method:'POST',body:JSON.stringify({employees})})};
+

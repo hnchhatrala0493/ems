@@ -17,7 +17,7 @@ import { auditLogger } from './middleware/auditLogger.js';
 
 export const app = express();
 
-const configuredOrigins = env.CLIENT_URL
+const configuredOrigins = env.ALLOWED_ORIGINS
   .split(',')
   .map((value) => value.trim())
   .filter(Boolean);
@@ -69,6 +69,7 @@ app.get('/health', (_req, res) => {
     }
   });
 });
+app.get('/api/v1/health', (_req, res) => res.json({ success: true, data: { status: 'healthy', timestamp: new Date().toISOString() } }));
 
 app.use(
   '/docs',

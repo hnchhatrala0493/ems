@@ -1,0 +1,3 @@
+import{Router}from'express';import rateLimit from'express-rate-limit';import{createDemoRequest,demoConfirmation}from'../controllers/demoRequest.controller.js';import{validateDemoLocation}from'../middleware/validateDemoLocation.js';
+export const demoRequestRoutes=Router();const limiter=rateLimit({windowMs:60*60*1000,limit:5,standardHeaders:true,legacyHeaders:false,handler:(_req,res)=>res.status(429).json({success:false,code:'TOO_MANY_DEMO_REQUESTS',message:'Too many demo requests were submitted. Please try again later.'})});demoRequestRoutes.post('/',limiter,validateDemoLocation,createDemoRequest);
+demoRequestRoutes.get('/confirmation/:requestId',rateLimit({windowMs:60000,limit:20,standardHeaders:true,legacyHeaders:false}),demoConfirmation);

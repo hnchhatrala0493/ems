@@ -12,6 +12,7 @@ type SidebarItem = { label: string; path?: string; icon?: LucideIcon; roles?: Ro
 
 const menu: SidebarItem[] = [
   { label: 'Dashboard', path: '/', icon: LayoutDashboard },
+  { label: 'Book Demo Requests', path: '/super-admin/demo-requests', icon: CalendarCheck, roles: ['SUPER_ADMIN'] },
   { label: 'Employees', icon: Users, children: [
     { label: 'All Employees', path: '/employees' },
     { label: 'Add Employee', path: '/employees/new' },

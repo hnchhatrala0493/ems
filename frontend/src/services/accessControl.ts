@@ -1,4 +1,4 @@
-export type Scope='OWN'|'TEAM'|'DEPARTMENT'|'BRANCH'|'ORGANIZATION'|'ALL';
+﻿export type Scope='OWN'|'TEAM'|'DEPARTMENT'|'BRANCH'|'ORGANIZATION'|'ALL';
 export type Effect='ALLOW'|'DENY';
 export type AccessRole={_id:string;name:string;code:string;description?:string;type:'SYSTEM'|'CUSTOM';status:string;priority:number;defaultScope:Scope;isDefaultRole?:boolean;isSystemRole?:boolean};
 export type AccessPermission={_id:string;name:string;code:string;moduleId:string;actionId:string;riskLevel:'LOW'|'MEDIUM'|'HIGH'|'CRITICAL';isSensitive:boolean;allowedScopes:Scope[]};
@@ -7,7 +7,7 @@ export type AccessModule={_id:string;name:string;code:string;slug:string;descrip
 export type PermissionAction={_id:string;name:string;code:string;riskLevel:string;status:string};
 export type MenuConfiguration={_id:string;moduleId:string;name:string;route:string;icon?:string;requiredPermission?:string;parentMenuId?:string|null;displayOrder:number;status:string};
 type Envelope<T>={success:boolean;message:string;data:T;pagination?:{page:number;limit:number;totalRecords:number;totalPages:number};errors?:unknown};
-const base=import.meta.env.VITE_API_URL||'/api/v1';
+const base=import.meta.env.VITE_API_BASE_URL||'/api/v1';
 const token=()=>localStorage.getItem('token')||sessionStorage.getItem('token')||'';
 async function refreshAccessToken(){const target=localStorage.getItem('refreshToken')?localStorage:sessionStorage,refreshToken=target.getItem('refreshToken');if(!refreshToken)return false;const response=await fetch(`${base}/auth/refresh`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({refreshToken})});if(!response.ok){localStorage.clear();sessionStorage.clear();window.location.assign('/login');return false}const payload=await response.json() as Envelope<{token:string}>;target.setItem('token',payload.data.token);return true}
 async function request<T>(path:string,init:RequestInit={},retried=false):Promise<Envelope<T>>{const response=await fetch(`${base}${path}`,{...init,headers:{authorization:`Bearer ${token()}`,'content-type':'application/json',...init.headers}});if(response.status===401&&!retried&&await refreshAccessToken())return request<T>(path,init,true);const payload=await response.json().catch(()=>({message:response.statusText}));if(!response.ok)throw new Error(payload.message||'Request failed');return payload as Envelope<T>}
@@ -22,3 +22,4 @@ export const accessControlApi={
  createOverride:(userId:string,value:{permissionId:string;effect:Effect;scope:Scope;effectiveFrom:string;effectiveUntil?:string;reason:string})=>request(`/users/${userId}/permission-overrides`,{method:'POST',body:body(value)}),
  effectivePermissions:(userId?:string)=>request(userId?`/users/${userId}/effective-permissions`:'/auth/me/permissions'), menu:()=>request<MenuConfiguration[]>('/auth/me/menu'), refresh:(userId:string)=>request(`/users/${userId}/permissions/refresh`,{method:'POST'})
 };
+

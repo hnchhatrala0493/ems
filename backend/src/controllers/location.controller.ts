@@ -1,0 +1,5 @@
+﻿import type{NextFunction,Request,Response}from'express';import{cities,countries,states}from'../services/location.service.js';import{AppError}from'../utils/AppError.js';import{ok}from'../utils/response.js';
+export async function listCountries(req:Request,res:Response,next:NextFunction){try{ok(res,await countries(String(req.query.search||'')))}catch{next(new AppError(503,'Unable to load countries','LOCATION_SERVICE_UNAVAILABLE'))}}
+export async function listStates(req:Request,res:Response,next:NextFunction){try{const data=await states(String(req.params.countryId),String(req.query.search||''));if(!data)throw new AppError(404,'Country not found');ok(res,data)}catch(e){next(e instanceof AppError?e:new AppError(503,'Unable to load states','LOCATION_SERVICE_UNAVAILABLE'))}}
+export async function listCities(req:Request,res:Response,next:NextFunction){try{const data=await cities(String(req.params.stateId),String(req.query.search||''));if(!data)throw new AppError(404,'State not found');ok(res,data)}catch(e){next(e instanceof AppError?e:new AppError(503,'Unable to load cities','LOCATION_SERVICE_UNAVAILABLE'))}}
+
