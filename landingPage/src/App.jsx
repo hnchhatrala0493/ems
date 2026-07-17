@@ -11,7 +11,7 @@ const roles = [['Super Admin','Full system control'],['HR Admin','People & polic
 const lifecycle = [['Recruit',I.UserSearch],['Select',I.BadgeCheck],['Onboard',I.ClipboardCheck],['Assign',I.BriefcaseBusiness],['Track',I.Clock],['Review',I.ChartNoAxesColumnIncreasing],['Pay',I.Banknote],['Grow',I.TrendingUp],['Offboard',I.LogOut]]
 const integrations = [[I.Mail,'Gmail'],[I.Mails,'Outlook'],[I.MessageSquare,'Slack'],[I.Users,'Microsoft Teams'],[I.Calendar,'Google Calendar'],[I.Fingerprint,'Biometric'],[I.Landmark,'Payroll systems'],[I.Braces,'REST API'],[I.Webhook,'Webhooks']]
 const faqs = ['What is an employee management system?','Can I manage multiple branches?','Can employees access their own portal?','Does the system support custom roles?','Can attendance devices be integrated?','Is employee data secure?','Can payroll rules be customized?','Is a mobile application available?']
-const appUrl = import.meta.env.VITE_APP_URL || 'http://localhost:5174'
+const appUrl = import.meta.env.VITE_APP_URL || 'https://ems-frontend-dusky-one.vercel.app'
 
 const Reveal=({children,className=''})=><motion.div className={className} initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true,margin:'-80px'}} transition={{duration:.55}}>{children}</motion.div>
 const SectionHead=({tag,title,text,center=false})=><div className={center?'mx-auto max-w-3xl text-center':''}><span className="eyebrow">{tag}</span><h2 className="heading">{title}</h2>{text&&<p className={'subheading '+(center?'mx-auto':'')}>{text}</p>}</div>
