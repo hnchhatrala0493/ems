@@ -17,6 +17,10 @@ import { auditLogger } from './middleware/auditLogger.js';
 
 export const app = express();
 
+// Vercel forwards the client through one trusted proxy. Without this setting,
+// rate limiting can group unrelated visitors under the platform proxy address.
+app.set('trust proxy', 1);
+
 const configuredOrigins = env.ALLOWED_ORIGINS
   .split(',')
   .map((value) => value.trim())
