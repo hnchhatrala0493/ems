@@ -35,8 +35,8 @@ const pages: Record<string, PageSeo> = {
   '/settings/security': { title: 'Security Settings', description: 'Manage your EmployeeHub account security and active sessions.', crumbs: ['Dashboard', 'Settings', 'Security'] },
   '/settings/email-templates': { title: 'Email Templates', description: 'Customize EmployeeHub transactional email templates and placeholders.', crumbs: ['Dashboard', 'Settings', 'Email Templates'] },
   '/settings/employee-id': { title: 'Employee ID Format', description: 'Configure automatic employee ID formats and sequences.', crumbs: ['Dashboard', 'Settings', 'Employee ID Format'] },
-  '/login': { title: 'Sign In', description: 'Sign in securely to your EmployeeHub account.', crumbs: ['Sign In'], index: true },
-  '/forgot-password': { title: 'Forgot Password', description: 'Request a secure password reset link for your EmployeeHub account.', crumbs: ['Sign In', 'Forgot Password'], index: true },
+  '/login': { title: 'Sign In', description: 'Sign in securely to your EmployeeHub account.', crumbs: ['Sign In'] },
+  '/forgot-password': { title: 'Forgot Password', description: 'Request a secure password reset link for your EmployeeHub account.', crumbs: ['Sign In', 'Forgot Password'] },
   '/reset-password': { title: 'Reset Password', description: 'Choose a new password for your EmployeeHub account.', crumbs: ['Sign In', 'Reset Password'] },
   '/verify-email': { title: 'Verify Email', description: 'Verify the email address associated with your EmployeeHub account.', crumbs: ['Verify Email'] },
 };

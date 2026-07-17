@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /book-demo/thank-you
+
+Sitemap: https://workforceprohub.vercel.app/sitemap.xml
