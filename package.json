@@ -11,13 +11,20 @@
     "dev:api": "npm run dev --workspace backend",
     "build": "npm run build --workspace frontend",
     "build:all": "npm run build --workspaces --if-present",
+    "lint": "eslint landingPage/src frontend/src backend/src app/src app/jest.setup.ts",
     "preview": "npm run preview --workspace frontend"
   },
   "engines": {
     "node": ">=20 <23"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^9.1.2",
+    "eslint": "^10.7.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "typescript-eslint": "^8.64.0"
   },
   "dependencies": {
     "helmet": "^8.3.0"
