@@ -46,6 +46,7 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { PermissionRoute } from './PermissionRoute';
 import { DemoRequests } from '../pages/DemoRequests';
 import { DemoRequestDetails } from '../pages/DemoRequestDetails';
+import { DemoEmailPreviews } from '../pages/DemoEmailPreviews';
 
 function PublicPage({ children }: { children: ReactNode }) {
   return <div className="relative">
@@ -102,6 +103,7 @@ export function AppRoutes() {
         <Route path="settings/employee-id" element={<EmployeeIdSettings/>}/>
         <Route path="super-admin/demo-requests" element={<PermissionRoute allowed={['SUPER_ADMIN']}><DemoRequests/></PermissionRoute>}/>
         <Route path="super-admin/demo-requests/:id" element={<PermissionRoute allowed={['SUPER_ADMIN']}><DemoRequestDetails/></PermissionRoute>}/>
+        <Route path="super-admin/demo-email-previews" element={<PermissionRoute allowed={['SUPER_ADMIN']}><DemoEmailPreviews/></PermissionRoute>}/>
       </Route>
     </Route>
     <Route path="*" element={<Navigate to={token ? '/' : '/login'} replace/>}/>

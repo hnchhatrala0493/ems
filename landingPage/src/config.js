@@ -1,3 +1,31 @@
-const clean=value=>value.replace(/\/+$/,'');
-const productionDefaults={apiBaseUrl:'https://api-ems-workforcepro.vercel.app/api/v1',emsAppUrl:'https://ems-workforcepro.vercel.app',emsLoginUrl:'https://ems-workforcepro.vercel.app/login',landingPageUrl:'https://workforceprohub.vercel.app'};
-export const appConfig={apiBaseUrl:clean(import.meta.env.VITE_API_BASE_URL||(import.meta.env.PROD?productionDefaults.apiBaseUrl:'/api/v1')),emsAppUrl:clean(import.meta.env.VITE_EMS_APP_URL||(import.meta.env.PROD?productionDefaults.emsAppUrl:'http://localhost:5173')),emsLoginUrl:clean(import.meta.env.VITE_EMS_LOGIN_URL||(import.meta.env.PROD?productionDefaults.emsLoginUrl:'http://localhost:5173/login')),landingPageUrl:clean(import.meta.env.VITE_LANDING_PAGE_URL||(import.meta.env.PROD?productionDefaults.landingPageUrl:window.location.origin))};
+const clean = (value) => value.replace(/\/+$/, "");
+const productionDefaults = {
+  apiBaseUrl: "https://api-ems-workforcepro.vercel.app/api/v1",
+  emsAppUrl: "https://ems-workforcepro.vercel.app",
+  emsLoginUrl: "https://ems-workforcepro.vercel.app/login",
+  landingPageUrl: "https://workforceprohub.vercel.app",
+};
+export const appConfig = {
+  apiBaseUrl: clean(
+    import.meta.env.VITE_API_BASE_URL ||
+      (import.meta.env.PROD ? productionDefaults.apiBaseUrl : "/api/v1"),
+  ),
+  emsAppUrl: clean(
+    import.meta.env.VITE_EMS_APP_URL ||
+      (import.meta.env.PROD
+        ? productionDefaults.emsAppUrl
+        : "http://localhost:5173"),
+  ),
+  emsLoginUrl: clean(
+    import.meta.env.VITE_EMS_LOGIN_URL ||
+      (import.meta.env.PROD
+        ? productionDefaults.emsLoginUrl
+        : "http://localhost:5173/login"),
+  ),
+  landingPageUrl: clean(
+    import.meta.env.VITE_LANDING_PAGE_URL ||
+      (import.meta.env.PROD
+        ? productionDefaults.landingPageUrl
+        : window.location.origin),
+  ),
+};
