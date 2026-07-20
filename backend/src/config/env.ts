@@ -6,12 +6,12 @@ dotenv.config({ path: ['.env.local', '.env'] });
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().default(5000),
-  MONGODB_URI: z.string().min(1).default('mongodb://localhost:27017/employee_management'),
+  MONGODB_URI: z.string().min(1).default('mongodb+srv://himanshupatel0493:GZqzbTSNtfl3fbgC@himanshucluster.rdxdf.mongodb.net/employee_management_system'),
   JWT_ACCESS_SECRET: z.string().min(32).default('development-access-secret-change-me'),
   JWT_REFRESH_SECRET: z.string().min(32).default('development-refresh-secret-change-me'),
   JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
-  CLIENT_URL: z.string().default('http://localhost:5173'),
+  CLIENT_URL: z.string().default('https://workforceprohub.vercel.app'),
   FRONTEND_URL: z.string().url().default('https://workforceprohub.vercel.app'),
   LANDING_PAGE_URL: z.string().url().default('https://workforceprohub.vercel.app'),
   EMS_APP_URL: z.string().url().default('https://ems-workforcepro.vercel.app'),
@@ -24,7 +24,7 @@ const schema = z.object({
   REDIS_URL: z.string().default(''), OPENAI_API_KEY: z.string().default(''), ENCRYPTION_KEY: z.string().default(''),
   LOG_LEVEL: z.string().default('info')
 }).superRefine((value, context) => {
-  for(const origin of value.CLIENT_URL.split(',').map(x=>x.trim())){if(!z.string().url().safeParse(origin).success)context.addIssue({code:'custom',path:['CLIENT_URL'],message:'CLIENT_URL must contain valid comma-separated origins.'})}
+  for (const origin of value.CLIENT_URL.split(',').map(x => x.trim())) { if (!z.string().url().safeParse(origin).success) context.addIssue({ code: 'custom', path: ['CLIENT_URL'], message: 'CLIENT_URL must contain valid comma-separated origins.' }) }
   if (value.NODE_ENV !== 'production') return;
   const unsafe = (secret: string) => secret.length < 32 || /development|change-me/i.test(secret);
   if (unsafe(value.JWT_ACCESS_SECRET)) context.addIssue({ code: 'custom', path: ['JWT_ACCESS_SECRET'], message: 'A strong production access-token secret is required.' });
