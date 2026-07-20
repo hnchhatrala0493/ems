@@ -13,5 +13,10 @@ async function start() {
     server.listen(env.PORT, () => logger.info(`EmployeeHub API listening on ${env.PORT}`));
     setInterval(() => void runAttendanceAutomation().catch(error => logger.error('Attendance automation failed', { error })), 60_000).unref()
 }
+console.log({
+    NODE_ENV: env.NODE_ENV,
+    mongo: !!env.MONGODB_URI,
+    jwt: !!process.env.JWT_SECRET,
+});
 start().catch(error => { logger.error('Startup failed', { error }); process.exit(1) });
 const shutdown = () => server.close(() => mongoose.disconnect().finally(() => process.exit(0))); process.on('SIGTERM', shutdown); process.on('SIGINT', shutdown);
