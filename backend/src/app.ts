@@ -12,7 +12,7 @@ import {
   errorHandler,
   notFound
 } from './middleware/errorHandler.js';
-import { apiRateLimiter } from './middleware/rateLimiter.js';
+// import { apiRateLimiter } from './middleware/rateLimiter.js';
 import { auditLogger } from './middleware/auditLogger.js';
 
 export const app = express();
@@ -62,7 +62,7 @@ app.use(compression());
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('combined'));
 
-app.use('/api', apiRateLimiter);
+// app.use('/api', apiRateLimiter);
 
 app.get('/health', (_req, res) => {
   res.json({
