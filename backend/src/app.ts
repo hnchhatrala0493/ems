@@ -1,5 +1,5 @@
 import express from 'express';
-import helmet from 'helmet';
+// import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import morgan from 'morgan';
@@ -49,7 +49,7 @@ const allowOrigin = (
   callback(new Error('Origin is not allowed by CORS'));
 };
 
-app.use(helmet());
+// app.use(helmet());
 
 app.use(
   cors({
