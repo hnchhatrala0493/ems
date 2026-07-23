@@ -6,7 +6,7 @@ services:
   api:
     build: ./backend
     environment:
-      MONGODB_URI: mongodb://mongo:27017/employee_management
+      MONGODB_URI: mongodb+srv://himanshupatel0493:GZqzbTSNtfl3fbgC@himanshucluster.rdxdf.mongodb.net/employee_management_system
       JWT_ACCESS_SECRET: local-docker-access-secret-change-before-production
       JWT_REFRESH_SECRET: local-docker-refresh-secret-change-before-production
       CLIENT_URL: http://localhost:5173
